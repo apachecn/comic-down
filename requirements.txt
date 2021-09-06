@@ -1,0 +1,6 @@
+requests
+pyquery
+GenEpub
+imgyaso
+numpy
+cv2
