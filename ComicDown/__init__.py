@@ -4,7 +4,6 @@
 """ComicDown
 https://github.com/apachecn/comic-down"""
 
-from . import img
 from . import util
 
 __author__ = "ApacheCN"

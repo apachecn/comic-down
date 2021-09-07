@@ -3,4 +3,4 @@ pyquery
 GenEpub
 imgyaso
 numpy
-cv2
+opencv-python
