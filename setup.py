@@ -31,6 +31,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Text Processing :: Markup :: HTML",
+        "Topic :: Scientific/Engineering :: Image Processing",
         "Topic :: Utilities",
     ],
     description="ComicDown，漫画批量下载工具",
