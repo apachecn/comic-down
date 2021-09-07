@@ -87,7 +87,7 @@ def tr_download_ch(url, info):
         timeout=config['timeout'],
         proxies=config['proxy'],
     ).content.decode(config['encoding'])
-    ch = get_chapter(html)
+    ch = get_chapter(html, url)
     if not ch['imgs']:
         print('找不到章节页面')
         return
@@ -156,7 +156,7 @@ def main():
         timeout=config['timeout'],
         proxies=config['proxy'],
     ).content.decode(config['encoding'])
-    info = get_info(html)
+    info = get_info(html, config['url'])
     print(info['title'], info['author'])
     
     if len(info['toc']) == 0:
