@@ -107,6 +107,7 @@ def tr_download_ch(url, info):
     imgs = {}
     hdls = []
     for i, img_url in enumerate(ch['imgs']):
+        print(f'pic: {img_url}')
         hdl = img_pool.submit(tr_download_img, img_url, imgs, f'{i}.png')
         hdls.append(hdl)
     for h in hdls:
