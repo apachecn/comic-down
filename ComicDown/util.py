@@ -2,7 +2,7 @@
 
 import requests
 from imgyaso import pngquant_bts, \
-    adathres_bts, grid_bts, noise_bts, trunc_bts
+    adathres_bts, grid_bts, noise_bts, trunc_bts, noisebw_bts
 import os
 import shutil
 import tempfile
@@ -11,44 +11,22 @@ from os import path
 import uuid
 import numpy as np
 import cv2
+from BookerWikiTool.util import fname_escape, request_retry, safe_mkdir
 
-def fname_escape(name):
-    return name.replace('\\', '＼') \
-               .replace('/', '／') \
-               .replace(':', '：') \
-               .replace('*', '＊') \
-               .replace('?', '？') \
-               .replace('"', '＂') \
-               .replace('<', '＜') \
-               .replace('>', '＞') \
-               .replace('|', '｜')
 
-def request_retry(method, url, retry=10, **kw):
-    kw.setdefault('timeout', 10)
-    for i in range(retry):
-        try:
-            return requests.request(method, url, **kw)
-        except KeyboardInterrupt as e:
-            raise e
-        except Exception as e:
-            print(f'{url} retry {i}')
-            if i == retry - 1: raise e
-            
-def opti_img(img, mode, colors):
-    if mode == 'quant':
-        return pngquant_bts(img, colors)
-    elif mode == 'grid':
-        return grid_bts(img)
-    elif mode == 'trunc':
-        return trunc_bts(img, colors)
-    elif mode == 'thres':
-        return adathres_bts(img)
-    else:
-        return img
-        
-def safe_mkdir(dir):
-    try: os.mkdir(dir)
-    except: pass
+def waifu2x_auto(img)：
+    fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.png')
+    open(fname, 'wb').write(img)
+    subp.Popen(
+        ['wiki-tool', 'waifu2x-auto', fname], 
+        shell=True,
+    ).communicate()
+    img = open(fname, 'rb').read()
+    safe_remove(fname)
+    return img
+
+def opti_img(img):
+    return noisebw_bts(trunc_bts(waifu2x_auto(img), 4))
         
 def safe_remove(name):
     try: os.remove(name)
@@ -69,27 +47,3 @@ def load_module(fname):
     safe_remove(nfname)
     return mod
     
-def resize_img(img, nw=0):
-    if nw == 0: 
-        return img
-    
-    img = np.frombuffer(img, np.uint8)
-    img = cv2.imdecode(img, cv2.IMREAD_GRAYSCALE)
-    
-    h, w, *_ = img.shape
-    if w > h: 
-        dims = list(range(img.ndim))
-        dims[0], dims[1] = 1, 0
-        img = img.transpose(dims)
-    
-    h, w, *_ = img.shape
-    if w > nw:
-        rate = nw / w
-        nh = round(h * rate)
-        img = cv2.resize(
-            img, (nw, nh), 
-            interpolation=cv2.INTER_CUBIC
-        )
-    
-    img = cv2.imencode('.png', img, [cv2.IMWRITE_PNG_COMPRESSION, 9])[1]
-    return bytes(img)
