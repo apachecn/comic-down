@@ -4,3 +4,4 @@ GenEpub
 imgyaso
 numpy
 opencv-python
+BookerWikiTool
